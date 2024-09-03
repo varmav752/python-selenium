@@ -1,0 +1,1 @@
+behave --format html --outfile reports/behave_report.html
