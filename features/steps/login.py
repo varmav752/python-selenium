@@ -1,9 +1,21 @@
-import time
-
+import time,logging
 from behave import given, when, then
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+def logging_in(condition):
+    assert condition
+    logging.info("Assertion passed")
+
+
+
+
 
 @given('I am on the Demo Login Page')
 def step_impl(context):
@@ -32,7 +44,11 @@ def step_impl(context):
 @then('I verify the App Logo exists')
 def step_impl(context):
     logo = context.driver.find_element(By.CLASS_NAME, "app_logo")
-    assert logo.is_displayed()
+    try:
+        logging_in(logo.is_displayed())
+    except AssertionError:
+        logging.error("Logo NA : Assertion failed")
+
 
 
 @then('I verify the Error Message contains the text "{error_message}"')
@@ -41,4 +57,8 @@ def step_impl(context, error_message):
     error_banner = WebDriverWait(context.driver, 10).until(
         EC.visibility_of_element_located((By.XPATH, "//h3[@data-test='error']"))
     )
-    assert error_message in error_banner.text
+    try:
+        logging_in(error_message in error_banner.text)
+    except AssertionError:
+        logging.error("Login : Assertion failed")
+

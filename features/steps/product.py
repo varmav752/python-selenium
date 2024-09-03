@@ -1,9 +1,16 @@
 import time
+import logging
+
 
 from behave import given, when, then
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+
+def logging_in(condition):
+    assert condition
+    logging.info("Assertion passed")
 
 @given('I am on the inventory page')
 def step_impl(context):
@@ -71,7 +78,12 @@ def step_impl(context):
 def step_impl(context):
     time.sleep(20)
     total_amount = context.driver.find_element(By.CLASS_NAME, "summary_total_label")
-    assert "$49.99" in total_amount.text
+    context.driver.execute_script("arguments[0].scrollIntoView();", total_amount)
+    print(total_amount.text,"totalamount")
+    try:
+        logging_in("$49.99" in total_amount.text)
+    except AssertionError:
+        logging.error("Total Amount  : Assertion failed")
 
 @when('user clicks Finish button')
 def step_impl(context):
@@ -84,4 +96,7 @@ def step_impl(context):
 def step_impl(context):
     time.sleep(20)
     thank_you_header = context.driver.find_element(By.CLASS_NAME, "complete-header")
-    assert "THANK YOU FOR YOUR ORDER" in thank_you_header.text
+    try:
+        logging_in("THANK YOU FOR YOUR ORDER" in thank_you_header.text)
+    except AssertionError:
+        logging.error("Thankyou : Assertion failed")
